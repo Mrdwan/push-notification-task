@@ -1,0 +1,182 @@
+define({ "api": [
+  {
+    "type": "post",
+    "url": "/",
+    "title": "Get details",
+    "version": "0.1.0",
+    "name": "details",
+    "description": "<p>This method returns all details by notification ID.</p>",
+    "group": "Information",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "allowedValues": [
+              "\"details\""
+            ],
+            "optional": false,
+            "field": "action",
+            "description": "<p>API method</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "int",
+            "optional": false,
+            "field": "notification_id",
+            "description": "<p>Notification ID</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\"action\":\"details\",\"notification_id\":123}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success:",
+          "content": "{\"success\":true,\"result\":{\"id\":123,\"title\":\"Hello\",\"message\":\"World\",\"sent\":90000,\"failed\":10000,\"in_progress\":100000,\"in_queue\":123456}}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Notification not found:",
+          "content": "{\"success\":false,\"result\":null}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "app/controllers/PushNotificationsController.php",
+    "groupTitle": "Information"
+  },
+  {
+    "type": "post",
+    "url": "/",
+    "title": "Sending by CRON",
+    "version": "0.1.0",
+    "name": "cron",
+    "description": "<p>This method sends the push notifications from queue.</p>",
+    "group": "Sending",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "allowedValues": [
+              "\"cron\""
+            ],
+            "optional": false,
+            "field": "action",
+            "description": "<p>API method</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\"action\":\"cron\"}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success and sent:",
+          "content": "{\"success\":true,\"result\":[{\"notification_id\":123,\"title\":\"Hello\",\"message\":\"World\",\"sent\":50000,\"failed\":10000},{\"notification_id\":124,\"title\":\"New\",\"message\":\"World\",\"sent\":20000,\"failed\":20000}]}",
+          "type": "json"
+        },
+        {
+          "title": "Success, no notifications in the queue:",
+          "content": "{\"success\":true,\"result\":[]}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "app/controllers/PushNotificationsController.php",
+    "groupTitle": "Sending"
+  },
+  {
+    "type": "post",
+    "url": "/",
+    "title": "Request to send",
+    "version": "0.1.0",
+    "name": "send",
+    "description": "<p>This method saves the push notification and put it to the queue.</p>",
+    "group": "Sending",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "allowedValues": [
+              "\"send\""
+            ],
+            "optional": false,
+            "field": "action",
+            "description": "<p>API method</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "title",
+            "description": "<p>Title of push notification</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Message of push notification</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "int",
+            "optional": false,
+            "field": "country_id",
+            "description": "<p>Country ID</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\"action\":\"send\",\"title\":\"Hello\",\"message\":\"World\",\"country_id\":4}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success:",
+          "content": "{\"success\":true,\"result\":{\"notification_id\":123}}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Failed:",
+          "content": "{\"success\":false,\"result\":null}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "app/controllers/PushNotificationsController.php",
+    "groupTitle": "Sending"
+  }
+] });

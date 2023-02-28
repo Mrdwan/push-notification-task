@@ -1,0 +1,27 @@
+{
+    "name": "sevaske/test-push-notifications",
+    "license": "",
+    "type": "test",
+    "description": "",
+    "authors": [
+        {
+            "name": "Sevak Mnatcakanian",
+            "email": "s.mnatcakanian@gasable.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4.0",
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "robmorgan/phinx": "^0.12.10"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "root\\": "",
+            "app\\": "app"
+        }
+    }
+}
