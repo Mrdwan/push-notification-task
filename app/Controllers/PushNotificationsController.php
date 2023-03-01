@@ -1,12 +1,12 @@
 <?php
 
 
-namespace App\Controllers;
+namespace app\controllers;
 
 
-use App\Models\PushNotificationsModel;
+use app\models\PushNotificationsModel;
 
-class PushNotificationsController extends Controller
+class PushNotificationsController
 {
     /**
      * @api {post} / Request to send

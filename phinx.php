@@ -1,24 +1,22 @@
 <?php
 
-use app\configs\Database;
-
 return
 [
     'paths' => [
-        'migrations' => '%%PHINX_CONFIG_DIR%%/app/db/migrations',
-        'seeds' => '%%PHINX_CONFIG_DIR%%/app/db/seeds',
+        'migrations' => '%%PHINX_CONFIG_DIR%%/database/migrations',
+        'seeds' => '%%PHINX_CONFIG_DIR%%/database/seeds',
     ],
     'environments' => [
         'default_migration_table' => 'migrations',
-        'default_environment' => 'development',
-        'development' => [
-            'adapter' => Database::ADAPTER,
-            'host' => Database::HOST,
-            'name' => Database::NAME,
-            'port' => Database::PORT,
-            'user' => Database::USER_NAME,
-            'pass' => Database::PASSWORD,
-            'charset' => Database::CHARSET,
+        'default_environment' => 'local',
+        'local' => [
+            'charset' => config('DB_CHARSET'),
+            'adapter' => config('DB_ADAPTER'),
+            'host' => config('DB_HOST'),
+            'port' => config('DB_PORT'),
+            'name' => config('DB_NAME'),
+            'user' => config('DB_USER_NAME'),
+            'pass' => config('DB_PASSWORD'),
         ],
     ],
     'version_order' => 'creation'

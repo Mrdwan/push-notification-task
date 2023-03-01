@@ -13,15 +13,19 @@
         "php": ">=7.4.0",
         "ext-pdo": "*",
         "ext-json": "*",
-        "robmorgan/phinx": "^0.12.10"
+        "robmorgan/phinx": "^0.12.10",
+        "vlucas/phpdotenv": "^5.5"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master"
     },
     "autoload": {
+        "files": [
+            "helpers/config.php",
+            "helpers/response.php"
+        ],
         "psr-4": {
-            "root\\": "",
-            "app\\": "app"
+            "App\\": "app/"
         }
     }
 }

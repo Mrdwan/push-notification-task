@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Models;
+namespace app\models;
 
 
 use Exception;
