@@ -29,7 +29,7 @@ The app should not only work, but also **work fast**. Think about the **optimiza
 ### Start
 1. Clone the repo: 
 ```
-  git clone https://github.com/sevaske/test-push-notifications
+  git clone git clone https://{user}@bitbucket.org/levantsoft/push-notifications.git
 ```
 3. Install: 
 ```
@@ -38,8 +38,8 @@ The app should not only work, but also **work fast**. Think about the **optimiza
 3. Create a database and configure **app/configs/Database.php**
 4. Run migrations and fill your database:
 ```
-  php vendor/bin/phinx migrate
-  php vendor/bin/phinx seed:run -s CountriesSeeder -s UsersSeeder -s DevicesSeeder
+  vendor/bin/phinx migrate
+  vendor/bin/phinx seed:run -s CountriesSeeder -s UsersSeeder -s DevicesSeeder
 ```
 
 ### What you need to do:
