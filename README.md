@@ -1,7 +1,7 @@
 # PUSH NOTIFICATIONS
 
-The app sends push notifications to all users by country. The push notification contains a title and a message. It sends to the user's device by the device token. 
-We have 3 "actions":
+The mini application sends push notifications to all users by country. The push notification contains a title and a message. It sends to the user's device by device token.
+There are tree "actions" in the application:
 - ``send`` saves the push notification in the database and puts it in the queue. We send push notifications by **cron** action.
 - ``details`` displays detailed information about the push notification.
 - ``cron`` sends the push notification(s) to 100K devices.
