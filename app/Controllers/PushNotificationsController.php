@@ -6,7 +6,7 @@ namespace App\Controllers;
 
 use App\Models\PushNotificationsModel;
 
-class PushNotificationsController
+class PushNotificationsController extends Controller
 {
     /**
      * @api {post} / Request to send
