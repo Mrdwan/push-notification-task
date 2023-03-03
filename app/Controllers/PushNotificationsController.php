@@ -1,10 +1,10 @@
 <?php
 
 
-namespace app\controllers;
+namespace App\Controllers;
 
 
-use app\models\PushNotificationsModel;
+use App\Models\PushNotificationsModel;
 
 class PushNotificationsController
 {
