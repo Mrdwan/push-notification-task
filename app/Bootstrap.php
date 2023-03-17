@@ -3,7 +3,7 @@
 namespace App;
 
 use App\Controllers\Controller;
-use App\Controllers\PushNotificationsController;
+use App\Controllers\PushNotificationController;
 use JsonException;
 
 class Bootstrap
@@ -24,7 +24,7 @@ class Bootstrap
         }
 
         $this->action = $action;
-        $this->controller = new PushNotificationsController();
+        $this->controller = new PushNotificationController();
 
         $this->run();
     }
