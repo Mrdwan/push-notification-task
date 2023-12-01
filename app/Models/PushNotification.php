@@ -46,6 +46,30 @@ class PushNotification extends Model
         }
     }
 
+    static function statistics(int $notificationID): ?array
+    {
+        // TODO: can be improve to (join method + where method) ORM
+        $statement = parent::connection()->prepare("
+            SELECT
+                p.`id`,
+                p.`title`,
+                p.`message`,
+                COUNT(q.`status`) AS total_count,
+                COUNT(CASE WHEN q.`status` = 0 THEN 1 END) AS pending_count,
+                COUNT(CASE WHEN q.`status` = 1 THEN 1 END) AS sent_count,
+                COUNT(CASE WHEN q.`status` = 2 THEN 1 END) AS failed_count
+            FROM push_notifications p
+            JOIN push_notifications_queue q
+                ON p.`id` = q.`push_notification_id`
+            WHERE p.`id` = ?
+        ");
+
+        $statement->bindValue(1, $notificationID);
+        $statement->execute();
+
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
     /**
      * @throws Exception
      */

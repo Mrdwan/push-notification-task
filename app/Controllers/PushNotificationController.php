@@ -72,18 +72,20 @@ class PushNotificationController extends Controller
      */
     public function details(int $notificationID): ?array
     {
-        // TODO return an array like:
-//        return [
-//            'id' => 123,
-//            'title' => 'Hello',
-//            'message' => 'World',
-//            'sent' => 90000,
-//            'failed' => 10000,
-//            'in_progress' => 100000,
-//            'in_queue' => 123456,
-//        ];
+        $stats = PushNotification::statistics($notificationID);
 
-        return null;
+        if (!$stats)
+            return null;
+
+        return [
+            'id' => $stats['id'],
+            'title' => $stats['title'],
+            'message' => $stats['message'],
+            'sent' => $stats['sent_count'],
+            'failed' => $stats['failed_count'],
+            'in_progress' => $stats['pending_count'],
+            'in_queue' => $stats['total_count'],
+        ];
     }
 
     /**
