@@ -43,7 +43,7 @@ class PushNotificationController extends Controller
             return null;
 
         // dispatch the notification to the users
-        PushNotification::dispatch($notificationId);
+        PushNotification::dispatch($title, $message, $countryId, $notificationId);
 
         return [
             'notification_id' => $notificationId

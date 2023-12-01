@@ -23,7 +23,7 @@ abstract class Model extends PDO
      *
      * @return PDO
      */
-    private static function connection(): PDO
+    public static function connection(): PDO
     {
         if (!isset(self::$pdo)) {
             $driver = config('DB_ADAPTER');
