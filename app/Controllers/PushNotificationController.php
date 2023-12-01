@@ -32,12 +32,22 @@ class PushNotificationController extends Controller
      */
     public function sendByCountryId(string $title, string $message, int $countryId): ?array
     {
-        // TODO create a push notification in the database and return notification ID:
-//        return [
-//            'notification_id' => 123,
-//        ];
+        // TODO: use DTO object instead of an array
+        $notificationId = PushNotification::create([
+            'title' => $title,
+            'message' => $message,
+            'country_id' => $countryId
+        ]);
 
-        return null;
+        if (!$notificationId)
+            return null;
+
+        // dispatch the notification to the users
+        PushNotification::dispatch($notificationId);
+
+        return [
+            'notification_id' => $notificationId
+        ];
     }
 
     /**
