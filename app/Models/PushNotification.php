@@ -72,7 +72,7 @@ class PushNotification extends Model
                 p.`failed`,
                 COUNT(q.`id`) AS pending_count
             FROM push_notifications p
-            JOIN push_notifications_queue q
+            LEFT JOIN push_notifications_queue q
                 ON p.`id` = q.`push_notification_id`
             WHERE p.`id` = ?
         ");
