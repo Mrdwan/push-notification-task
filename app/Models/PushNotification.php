@@ -60,6 +60,13 @@ class PushNotification extends Model
         } while (!empty($devices));
     }
 
+    /**
+     * get notification statistics
+     *
+     * @param integer $notificationID
+     *
+     * @return array|null
+     */
     static function statistics(int $notificationID): ?array
     {
         // TODO: can be improved to (join method + where method) ORM
@@ -83,6 +90,13 @@ class PushNotification extends Model
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * update stats for a notification
+     *
+     * @param array $stats
+     *
+     * @return void
+     */
     static function updateStats(array $stats): void
     {
         $table = self::getTableName();
@@ -105,7 +119,11 @@ class PushNotification extends Model
     }
 
     /**
+     * send the notification
+     *
      * @throws Exception
+     *
+     * @return bool
      */
     public static function send(string $title, string $message, string $token): bool
     {

@@ -49,7 +49,7 @@ class PushNotificationQueue extends Model
      * Get push notifications in chunks.
      *
      * @param int $limit
-     * @param int $offset
+     * @param int|null $offset
      * @return array
      */
     static public function getInChunks(int $limit, ?int $offset): array
@@ -78,6 +78,12 @@ class PushNotificationQueue extends Model
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Delete queue records in bluk
+     *
+     * @param array $ids
+     * @return boolean
+     */
     static function bulkDelete(array $ids): bool
     {
         $tableName = self::getTableName();
