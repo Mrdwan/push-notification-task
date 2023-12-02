@@ -57,7 +57,7 @@ class PushNotification extends Model
                 p.`message`,
                 p.`sent`,
                 p.`failed`,
-                COUNT(q.`id`) AS pending_count,
+                COUNT(q.`id`) AS pending_count
             FROM push_notifications p
             JOIN push_notifications_queue q
                 ON p.`id` = q.`push_notification_id`

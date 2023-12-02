@@ -82,10 +82,10 @@ class PushNotificationController extends Controller
             'id' => $stats['id'],
             'title' => $stats['title'],
             'message' => $stats['message'],
-            'sent' => $stats['sent_count'],
-            'failed' => $stats['failed_count'],
+            'sent' => $stats['sent'],
+            'failed' => $stats['failed'],
             'in_progress' => $stats['pending_count'],
-            'in_queue' => $stats['total_count'],
+            'in_queue' => $stats['pending_count'],
         ];
     }
 
