@@ -11,6 +11,8 @@ final class PushNotifications extends AbstractMigration
             ->addColumn('title', 'string', ['limit' => 190])
             ->addColumn('message', 'text')
             ->addColumn('country_id', 'integer')
+            ->addColumn('sent', 'integer', ['default' => 0])
+            ->addColumn('failed', 'integer', ['default' => 0])
             ->addForeignKey('country_id', 'countries', 'id')
             ->create();
     }

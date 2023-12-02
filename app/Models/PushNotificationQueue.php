@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
+use PDO;
 use Exception;
 
 class PushNotificationQueue extends Model
 {
-    const STATUS_PENDING = 0;
-    const STATUS_SENT = 1;
-    const STATUS_FAILED = 2;
-
     protected static function getTableName(): string
     {
         return 'push_notifications_queue';
@@ -29,33 +26,50 @@ class PushNotificationQueue extends Model
         // TODO: use DTO object instead of an array
         return self::create([
             'content' => json_encode($data),
-            'push_notification_id' => $notificationId,
-            'status' => self::STATUS_PENDING
+            'push_notification_id' => $notificationId
         ]);
     }
 
-    public function markNotificationAsSent()
+    /**
+     * Get push notifications in chunks.
+     *
+     * @param int $limit
+     * @param int $offset
+     * @return array
+     */
+    static public function getInChunks(int $limit, int $offset): array
     {
-        $sql = "UPDATE notification_queue SET status = :status WHERE push_notification_id = :push_notification_id";
-        $statement = $this->prepare($sql);
+        // TODO: better ORM
+        $statement = parent::connection()->prepare("
+            SELECT *
+            FROM push_notifications_queue
+            ORDER BY id
+            LIMIT :limit OFFSET :offset
+        ");
 
-        $pushNotificationId = $this->getId();
+        $statement->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $statement->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $statement->execute();
 
-        $statement->bindParam(':push_notification_id', $pushNotificationId, PDO::PARAM_INT);
-        $statement->bindValue(':status', self::STATUS_SENT, PDO::PARAM_INT);
-
-        return $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function markNotificationAsFailed()
+    static function bulkDelete(array $ids): bool
     {
-        $sql = "UPDATE notification_queue SET status = :status WHERE push_notification_id = :push_notification_id";
-        $statement = $this->prepare($sql);
+        $tableName = self::getTableName();
 
-        $pushNotificationId = $this->getId();
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
 
-        $statement->bindParam(':push_notification_id', $pushNotificationId, PDO::PARAM_INT);
-        $statement->bindValue(':status', self::STATUS_FAILED, PDO::PARAM_INT);
+        // TODO: better ORM
+        $statement = parent::connection()->prepare("
+            DELETE FROM $tableName
+            WHERE id IN ($placeholders)
+        ");
+
+        // Bind each ID separately
+        foreach ($ids as $index => $id) {
+            $statement->bindValue($index + 1, $id, PDO::PARAM_INT);
+        }
 
         return $statement->execute();
     }

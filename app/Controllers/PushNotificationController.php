@@ -5,6 +5,7 @@ namespace App\Controllers;
 
 
 use App\Models\PushNotification;
+use App\Models\PushNotificationQueue;
 
 class PushNotificationController extends Controller
 {
@@ -107,24 +108,60 @@ class PushNotificationController extends Controller
      * @apiSuccessExample {json} Success, no notifications in the queue:
     {"success":true,"result":[]}
      */
-    public function cron(): array
+    public function cron()
     {
-        // TODO send push notifications to 100000k devices from queue and use PushNotification::send() to send
-        return [
-//            [
-//                'notification_id' => 123,
-//                'title' => 'Hello',
-//                'message' => 'World',
-//                'sent' => 50000,
-//                'failed' => 10000,
-//            ],
-//            [
-//                'notification_id' => 124,
-//                'title' => 'New',
-//                'message' => 'World',
-//                'sent' => 20000,
-//                'failed' => 20000,
-//            ],
-        ];
+        $limit = 5000;
+        $offset = 0;
+        $stats = [];
+
+        do {
+            $notifications = PushNotificationQueue::getInChunks($limit, $offset);
+
+            // stop if reached 100000k devices (task limit)
+            if ($offset >= 100000000) {
+                break;
+            }
+
+            foreach ($notifications as $notification) {
+                $data = json_decode($notification['content'], true);
+                $is_sent = PushNotification::send($data['title'], $data['message'], $data['token']);
+
+                // idd the notification stats if not found -> hashtable to reduce searching time
+                if (!isset($stats[$notification['push_notification_id']])) {
+                    $stats[$notification['push_notification_id']] = [
+                        'notification_id' => $notification['push_notification_id'],
+                        'title' => $data['title'],
+                        'message' => $data['message'],
+                        'sent' => 0,
+                        'failed' => 0
+                    ];
+                }
+
+                if ($is_sent) {
+                    $stats[$notification['push_notification_id']]['sent']++;
+                } else {
+                    $stats[$notification['push_notification_id']]['failed']++;
+                }
+            }
+
+            // Update offset for the next iteration
+            $offset += $limit;
+
+            // delete once to reduce db hits
+            $queueJobsIds = array_column($notifications, 'id');
+
+            if (count($queueJobsIds)) {
+                PushNotificationQueue::bulkDelete($queueJobsIds);
+            }
+
+            // Continue processing until there are no more records
+        } while (!empty($notifications));
+
+        if (!$stats)
+            return null;
+
+        PushNotification::updateStats($stats);
+
+        return array_values($stats);
     }
 }

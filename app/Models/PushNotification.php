@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use PDO;
+use App\Models\PushNotificationQueue;
 use Exception;
+use PDO;
 
 class PushNotification extends Model
 {
@@ -24,7 +25,7 @@ class PushNotification extends Model
      */
     public static function dispatch(string $title, string $message, int $deviceId, int $notificationId): void
     {
-        // TODO: can be improve to (join method + where method) ORM
+        // TODO: can be improved to (join method + where method) ORM
         $statement = parent::connection()->prepare("
             SELECT d.`token`
             FROM `devices` d
@@ -48,16 +49,15 @@ class PushNotification extends Model
 
     static function statistics(int $notificationID): ?array
     {
-        // TODO: can be improve to (join method + where method) ORM
+        // TODO: can be improved to (join method + where method) ORM
         $statement = parent::connection()->prepare("
             SELECT
                 p.`id`,
                 p.`title`,
                 p.`message`,
-                COUNT(q.`status`) AS total_count,
-                COUNT(CASE WHEN q.`status` = 0 THEN 1 END) AS pending_count,
-                COUNT(CASE WHEN q.`status` = 1 THEN 1 END) AS sent_count,
-                COUNT(CASE WHEN q.`status` = 2 THEN 1 END) AS failed_count
+                p.`sent`,
+                p.`failed`,
+                COUNT(q.`id`) AS pending_count,
             FROM push_notifications p
             JOIN push_notifications_queue q
                 ON p.`id` = q.`push_notification_id`
@@ -68,6 +68,27 @@ class PushNotification extends Model
         $statement->execute();
 
         return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
+    static function updateStats(array $stats): void
+    {
+        $table = self::getTableName();
+
+        foreach ($stats as $notificationStats) {
+            $statement = parent::connection()->prepare("
+                UPDATE $table
+                SET
+                    sent = sent + :sent,
+                    failed = failed + :failed
+                WHERE
+                    id = :id
+            ");
+
+            $statement->bindParam(':sent', $notificationStats['sent']);
+            $statement->bindParam(':failed', $notificationStats['failed']);
+            $statement->bindParam(':id', $notificationStats['notification_id']);
+            $statement->execute();
+        }
     }
 
     /**
