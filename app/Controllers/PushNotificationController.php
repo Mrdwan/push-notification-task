@@ -110,12 +110,13 @@ class PushNotificationController extends Controller
      */
     public function cron()
     {
-        $limit = 5000;
+        $limit = 10000;
         $offset = 0;
         $stats = [];
+        $last_id = null;
 
         do {
-            $notifications = PushNotificationQueue::getInChunks($limit, $offset);
+            $notifications = PushNotificationQueue::getInChunks($limit, $last_id);
 
             // stop if reached 100000k devices (task limit)
             if ($offset >= 100000000) {
@@ -136,6 +137,8 @@ class PushNotificationController extends Controller
                         'failed' => 0
                     ];
                 }
+
+                $last_id = $notification['id'];
 
                 if ($is_sent) {
                     $stats[$notification['push_notification_id']]['sent']++;

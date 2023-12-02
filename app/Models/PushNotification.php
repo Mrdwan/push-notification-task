@@ -18,33 +18,46 @@ class PushNotification extends Model
      *
      * @param string $title
      * @param string $message
-     * @param integer $deviceId
+     * @param integer $countryId
      * @param integer $notificationId
      *
      * @return void
      */
-    public static function dispatch(string $title, string $message, int $deviceId, int $notificationId): void
+    public static function dispatch(string $title, string $message, int $countryId, int $notificationId): void
     {
+        $chunkSize = 5000;
+
         // TODO: can be improved to (join method + where method) ORM
         $statement = parent::connection()->prepare("
             SELECT d.`token`
             FROM `devices` d
             INNER JOIN `users` u ON d.`user_id` = u.`id`
-            WHERE u.`country_id` = ?
+            WHERE u.`country_id` = :countryId
             AND d.`expired` = 0
+            LIMIT :offset, :limit
         ");
 
-        $statement->bindValue(1, $deviceId);
-        $statement->execute();
-        $devices = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $statement->bindValue(':countryId', $countryId, PDO::PARAM_INT);
 
-        foreach ($devices as $device) {
-            PushNotificationQueue::queue($notificationId, [
-                'title' => $title,
-                'message' => $message,
-                'token' => $device['token'],
-            ]);
-        }
+        $page = 0;
+        do {
+            $offset = $page * $chunkSize;
+            $statement->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $statement->bindValue(':limit', $chunkSize, PDO::PARAM_INT);
+
+            $statement->execute();
+            $devices = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($devices) {
+                $tokens = array_column($devices, 'token');
+                PushNotificationQueue::queue($notificationId, $tokens, [
+                        'title' => $title,
+                        'message' => $message,
+                ]);
+            }
+
+            $page++;
+        } while (!empty($devices));
     }
 
     static function statistics(int $notificationID): ?array

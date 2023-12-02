@@ -17,17 +17,32 @@ class PushNotificationQueue extends Model
      * will add it to the database as a simple queue then will consume it later
      *
      * @param integer $notificationId
+     * @param array $tokens
      * @param array $data
      *
      * @return integer|null
      */
-    static public function queue(int $notificationId, array $data): ?int
+    static public function queue(int $notificationId, array $tokens, array $data): ?int
     {
-        // TODO: use DTO object instead of an array
-        return self::create([
-            'content' => json_encode($data),
-            'push_notification_id' => $notificationId
-        ]);
+        $table = self::getTableName();
+        // Build the placeholders for the prepared statement
+        $placeholders = implode(',', array_fill(0, count($tokens), '(?, ?)'));
+
+        // Prepare the statement with placeholders
+        $statement = parent::connection()->prepare("
+            INSERT INTO $table (content, push_notification_id) VALUES $placeholders
+        ");
+
+        // values should be flattened
+        // ['content1', 'push_notification_id_1', 'content2', 'push_notification_id_2', ...]
+        $values = [];
+        foreach ($tokens as $token) {
+            $content = array_merge($data, ['token' => $token]);
+            $values[] = json_encode($content);
+            $values[] = $notificationId;
+        }
+
+        return $statement->execute($values);
     }
 
     /**
@@ -37,18 +52,27 @@ class PushNotificationQueue extends Model
      * @param int $offset
      * @return array
      */
-    static public function getInChunks(int $limit, int $offset): array
+    static public function getInChunks(int $limit, ?int $offset): array
     {
         // TODO: better ORM
-        $statement = parent::connection()->prepare("
+        $sql = "
             SELECT *
             FROM push_notifications_queue
-            ORDER BY id
-            LIMIT :limit OFFSET :offset
-        ");
+        ";
 
+        if ($offset) {
+            $sql .= " WHERE id < :offset";
+        }
+
+        $sql .= " ORDER BY id DESC LIMIT :limit";
+
+        $statement = parent::connection()->prepare($sql);
         $statement->bindParam(':limit', $limit, PDO::PARAM_INT);
-        $statement->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+        if ($offset) {
+            $statement->bindParam(':offset', $offset, PDO::PARAM_INT);
+        }
+
         $statement->execute();
 
         return $statement->fetchAll(PDO::FETCH_ASSOC);
