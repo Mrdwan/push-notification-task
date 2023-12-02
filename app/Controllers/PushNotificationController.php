@@ -118,8 +118,8 @@ class PushNotificationController extends Controller
         do {
             $notifications = PushNotificationQueue::getInChunks($limit, $last_id);
 
-            // stop if reached 100000k devices (task limit)
-            if ($offset >= 100000000) {
+            // stop if reached 100k devices (task limit)
+            if ($offset >= config('PUSH_TO_N_DEVICES_BY_CRONE') ?: 100000) {
                 break;
             }
 

@@ -28,7 +28,7 @@ The app should not only work, but also **work fast and safely**. Think about the
 ---
 
 ### Get started
-1. Clone the repo: 
+1. Clone the repo:
 ```
   git clone https://x-token-auth:ATCTT3xFfGN0MvdiqxwZy89g4Sx7ppHHLbxsArNIux8A_r1YhbNmDqf3ZMy-ZTXx8U8yAMrlcv9YWbwb9Lx9HmXE_5hlnVJYeNdGXE_NqZvHgPfSEd1izqYiaLRE9AopCQF3WQw1UDTrDL3Ru8vmR72Zsw9YMNhwHkHFpk8IK6I00_4r_rrcgcc=08E86936@bitbucket.org/levantsoft/push-notifications.git
 ```
@@ -43,10 +43,10 @@ The app should not only work, but also **work fast and safely**. Think about the
 4. Run migrations and fill your database:
 ```
   vendor/bin/phinx migrate
-  vendor/bin/phinx seed:run -s CountriesSeeder -s UsersSeeder -s DevicesSeeder
+  **vendor/bin/phinx seed:run -s CountriesSeeder -s UsersSeeder -s DevicesSeeder**
 ```
 
---- 
+---
 
 ### When you're done
 Send a link of your repository to s.mnatcakanian@gasable.com when you're done. Let us know how many hours you spent on this task.
